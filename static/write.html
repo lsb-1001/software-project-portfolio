@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>글쓰기 - MyBoard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- 상단 네비게이션 (반응형) -->
+  <header class="header-gradient shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center space-x-2">
+          <img src="/static/pslw.png" alt="MyBoard" class="h-12" />
+          <span class="text-white font-bold text-xl hidden sm:inline">MyBoard</span>
+        </a>
+
+        <div class="flex items-center">
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="/write.html" class="text-white hover:text-gray-200 font-semibold transition">글쓰기</a>
+            <a href="/category.html?category=공지" class="text-white hover:text-gray-200 font-semibold transition">공지</a>
+            <a href="/category.html?category=자유" class="text-white hover:text-gray-200 font-semibold transition">자유</a>
+            <a href="/category.html?category=질문" class="text-white hover:text-gray-200 font-semibold transition">질문</a>
+          </nav>
+
+          <div id="authContainer" class="hidden md:block text-white ml-6"></div>
+
+          <button id="mobileMenuButton" class="md:hidden ml-3 text-white" onclick="toggleMobileMenu()" aria-label="메뉴 토글">
+            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="mobileMenu" class="md:hidden hidden mt-3 px-2 pb-3">
+        <a href="/write.html" class="block text-white px-3 py-2 rounded hover:bg-gray-700">글쓰기</a>
+        <a href="/category.html?category=공지" class="block text-white px-3 py-2 rounded hover:bg-gray-700">공지</a>
+        <a href="/category.html?category=자유" class="block text-white px-3 py-2 rounded hover:bg-gray-700">자유</a>
+        <a href="/category.html?category=질문" class="block text-white px-3 py-2 rounded hover:bg-gray-700">질문</a>
+        <div id="mobileAuthContainer" class="px-3 mt-2"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 글쓰기 폼 -->
+  <div class="min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-2xl bg-white rounded-lg shadow-lg p-8">
+      <div class="text-center mb-8">
+        <h1 class="text-3xl font-bold text-gray-800">✍️ 새 글 작성</h1>
+        <p class="text-gray-600 mt-2">당신의 생각과 아이디어를 공유해보세요!</p>
+      </div>
+
+      <form id="writeForm" class="space-y-6">
+        <!-- 카테고리 -->
+        <div>
+          <label class="block text-gray-700 font-semibold mb-2">카테고리</label>
+          <select id="category" class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition">
+            <option value="자유">💬 자유</option>
+            <option value="질문">❓ 질문</option>
+            <option value="공지">📢 공지</option>
+          </select>
+        </div>
+
+        <!-- 제목 -->
+        <div>
+          <label class="block text-gray-700 font-semibold mb-2">제목</label>
+          <input 
+            id="title" 
+            type="text" 
+            placeholder="글의 제목을 입력하세요" 
+            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+          >
+        </div>
+
+        <!-- 내용 -->
+        <div>
+          <label class="block text-gray-700 font-semibold mb-2">내용</label>
+          <textarea 
+            id="content" 
+            rows="10" 
+            placeholder="글의 내용을 입력하세요" 
+            class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition resize-none"
+          ></textarea>
+          <!-- 욕설 분석 결과 표시 -->
+          <div id="analysisResult" class="mt-3 hidden p-3 rounded-lg bg-gray-50 border-2 border-gray-200">
+            <p class="text-sm text-gray-600">욕설 분석: 
+              <span id="analysisSweariess" class="font-semibold"></span> | 
+              <span id="analysisScore" class="font-semibold"></span> | 
+              <span id="analysisLevel" class="font-semibold px-2 py-1 rounded text-white"></span>
+            </p>
+          </div>
+        </div>
+
+        <!-- 버튼 -->
+        <div class="flex space-x-4">
+          <button 
+            type="submit" 
+            class="flex-1 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition-shadow duration-300"
+          >
+            등록하기
+          </button>
+          <button 
+            type="button" 
+            onclick="history.back()" 
+            class="flex-1 bg-gray-300 hover:bg-gray-400 text-gray-800 font-bold py-3 rounded-lg transition"
+          >
+            취소
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- 푸터 -->
+  <footer class="bg-gray-800 text-gray-300 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; 2025 MyBoard. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    async function checkUserAuth() {
+      try {
+        const res = await fetch('/user/check');
+        const data = await res.json();
+        const authContainer = document.getElementById('authContainer');
+        
+        if (!data.logged_in) {
+          alert('❌ 로그인이 필요합니다.');
+          window.location.href = '/login.html';
+          return;
+        }
+        
+        window.CURRENT_USER = data.username;
+        window.IS_ADMIN = data.is_admin;
+        
+        // authContainer에 사용자 정보 및 관리 링크 표시
+        let adminLink = '';
+        if (data.is_admin) {
+          adminLink = `<a href="/admin.html" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm font-semibold text-white transition">관리</a>`;
+        }
+        const authHTML = `
+          <div class="flex items-center space-x-3">
+            <span class="font-semibold">${data.username}님</span>
+            ${adminLink}
+            <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-semibold transition">로그아웃</button>
+          </div>
+        `;
+        authContainer.innerHTML = authHTML;
+        const mobileAuth = document.getElementById('mobileAuthContainer');
+        if (mobileAuth) mobileAuth.innerHTML = authHTML;
+      } catch (error) {
+        console.error('인증 상태 확인 오류:', error);
+      }
+    }
+
+    async function logout() {
+      if (confirm('정말 로그아웃하시겠습니까?')) {
+        try {
+          const res = await fetch('/logout', { method: 'POST' });
+          if (res.ok) {
+            alert('✅ 로그아웃되었습니다.');
+            window.location.reload();
+          }
+        } catch (error) {
+          alert('❌ 로그아웃 중 오류가 발생했습니다.');
+        }
+      }
+    }
+
+    function toggleMobileMenu() {
+      const el = document.getElementById('mobileMenu');
+      if (!el) return;
+      el.classList.toggle('hidden');
+    }
+
+    // 내용 변경 시 욕설 분석
+    document.addEventListener('DOMContentLoaded', () => {
+      checkUserAuth();
+      document.getElementById('content').addEventListener('blur', async () => {
+        const content = document.getElementById('content').value;
+        if (!content) {
+          document.getElementById('analysisResult').classList.add('hidden');
+          return;
+        }
+        try {
+          const res = await fetch('/analyze', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text: content})
+          });
+          const result = await res.json();
+          document.getElementById('analysisSweariess').textContent = result.is_swear ? '있음' : '없음';
+          document.getElementById('analysisScore').textContent = `점수: ${result.swear_score.toFixed(3)}`;
+          const levelEl = document.getElementById('analysisLevel');
+          levelEl.textContent = result.level.toUpperCase();
+          levelEl.className = 'font-semibold px-2 py-1 rounded text-white ' + (
+            (result.level === 'high' || result.level === 'critical') ? 'bg-orange-600' :
+            result.level === 'mid' ? 'bg-yellow-600' :
+            'bg-green-600'
+          );
+          document.getElementById('analysisResult').classList.remove('hidden');
+        } catch (e) {
+          console.error('분석 실패:', e);
+        }
+      });
+    });
+
+    async function submitPost(e) {
+      if (e) e.preventDefault();
+      
+      const title = document.getElementById("title").value.trim();
+      const content = document.getElementById("content").value.trim();
+      const category = document.getElementById("category").value;
+
+      if (!title || !content) {
+        alert("❌ 제목과 내용을 모두 입력해주세요.");
+        return;
+      }
+
+      if (title.length > 100) {
+        alert("❌ 제목은 100자 이내여야 합니다.");
+        return;
+      }
+
+      const is_notice = category === "공지";
+
+      // 클라이언트에서도 공지 작성 권한 검증
+      if (is_notice && !window.IS_ADMIN) {
+        alert('❌ 공지사항 작성 권한이 없습니다. 관리자만 작성할 수 있습니다.');
+        return;
+      }
+
+      try {
+        const res = await fetch("/write", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ title, content, category, is_notice })
+        });
+
+        if (res.ok) {
+          const result = await res.json();
+          if (result.status === "success") {
+            alert("✅ 글이 등록되었습니다!");
+            window.location.href = `/post.html?id=${result.id}`;
+          } else {
+            alert("❌ 글 등록 실패: 서버 오류");
+          }
+        } else {
+          alert("❌ 글 등록 실패: 응답 오류");
+        }
+      } catch (error) {
+        alert("❌ 오류: " + error.message);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkUserAuth();
+      document.getElementById('writeForm').addEventListener('submit', submitPost);
+    });
+  </script>
+</body>
+</html>

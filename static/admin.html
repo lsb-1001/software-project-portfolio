@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>관리자 패널 - MyBoard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- 상단 네비게이션 (관리자용, 반응형) -->
+  <header class="header-gradient shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center space-x-2">
+          <img src="/static/pslw.png" alt="MyBoard" class="h-12" />
+          <span class="text-white font-bold text-xl hidden sm:inline">MyBoard - 관리자 패널</span>
+        </a>
+
+        <div class="flex items-center">
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="/write.html" class="text-white hover:text-gray-200 font-semibold transition">글쓰기</a>
+            <a href="/category.html?category=공지" class="text-white hover:text-gray-200 font-semibold transition">공지</a>
+            <a href="/category.html?category=자유" class="text-white hover:text-gray-200 font-semibold transition">자유</a>
+            <a href="/category.html?category=질문" class="text-white hover:text-gray-200 font-semibold transition">질문</a>
+          </nav>
+
+          <div id="authContainer" class="hidden md:block text-white ml-6"></div>
+          <button id="mobileMenuButtonAdmin" class="md:hidden ml-3 text-white" onclick="toggleMobileMenuAdmin()" aria-label="메뉴 토글">
+            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="mobileMenuAdmin" class="md:hidden hidden mt-3 px-2 pb-3">
+        <a href="/write.html" class="block text-white px-3 py-2 rounded hover:bg-gray-700">글쓰기</a>
+        <a href="/category.html?category=공지" class="block text-white px-3 py-2 rounded hover:bg-gray-700">공지</a>
+        <a href="/category.html?category=자유" class="block text-white px-3 py-2 rounded hover:bg-gray-700">자유</a>
+        <a href="/category.html?category=질문" class="block text-white px-3 py-2 rounded hover:bg-gray-700">질문</a>
+        <div id="mobileAuthContainer" class="px-3 mt-2"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 콘텐츠 -->
+  <main class="max-w-2xl mx-auto py-12 px-4">
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h1 class="text-3xl font-bold text-gray-800 mb-8">⚙️ 관리자 설정</h1>
+
+      <!-- 필터링 레벨 설정 -->
+      <div class="border-b pb-8 mb-8">
+        <h2 class="text-2xl font-bold text-gray-700 mb-4">욕설 필터링 레벨</h2>
+        <p class="text-gray-600 mb-4">욕설 단계에 따른 필터링 기준을 설정합니다.</p>
+        
+        <div class="space-y-3">
+          <div class="p-4 bg-green-50 border-2 border-green-200 rounded-lg">
+            <input type="radio" id="level_none" name="filtering_level" value="none">
+            <label for="level_none" class="ml-2 font-semibold">필터링 안함</label>
+            <p class="text-sm text-gray-600 ml-6 mt-1">모든 욕설을 필터링하지 않습니다.</p>
+          </div>
+
+          <div class="p-4 bg-blue-50 border-2 border-blue-200 rounded-lg">
+            <input type="radio" id="level_low" name="filtering_level" value="low">
+            <label for="level_low" class="ml-2 font-semibold">Low 이상 필터링</label>
+            <p class="text-sm text-gray-600 ml-6 mt-1">Low, Mid, High 욕설을 필터링합니다.</p>
+          </div>
+
+          <div class="p-4 bg-yellow-50 border-2 border-yellow-200 rounded-lg">
+            <input type="radio" id="level_mid" name="filtering_level" value="mid">
+            <label for="level_mid" class="ml-2 font-semibold">Mid 이상 필터링</label>
+            <p class="text-sm text-gray-600 ml-6 mt-1">Mid, High 욕설을 필터링합니다.</p>
+          </div>
+
+          <div class="p-4 bg-orange-50 border-2 border-orange-200 rounded-lg">
+            <input type="radio" id="level_high" name="filtering_level" value="high">
+            <label for="level_high" class="ml-2 font-semibold">High 이상 필터링</label>
+            <p class="text-sm text-gray-600 ml-6 mt-1">High 욕설을 필터링합니다.</p>
+          </div>
+
+        </div>
+
+        <button onclick="saveFilteringLevel()" class="mt-6 w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition-shadow">
+          저장하기
+        </button>
+      </div>
+
+      <!-- 현재 설정 정보 -->
+      <div class="bg-blue-50 border-2 border-blue-200 rounded-lg p-6">
+        <h3 class="text-lg font-bold text-gray-800 mb-3">현재 설정</h3>
+        <p class="text-gray-600">
+          <span class="font-semibold">활성 API:</span> <span id="active_api">로딩 중...</span>
+        </p>
+        <p class="text-gray-600 mt-2">
+          <span class="font-semibold">현재 필터링 레벨:</span> <span id="current_level">로딩 중...</span>
+        </p>
+      </div>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-gray-800 text-gray-300 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; 2025 MyBoard. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    // 관리자 권한 확인
+    async function checkAdminAuth() {
+      try {
+        const res = await fetch('/user/check');
+        const data = await res.json();
+        if (!data.logged_in || !data.is_admin) {
+          alert('❌ 관리자만 접근할 수 있습니다.');
+          window.location.href = '/';
+          return;
+        }
+        // 헤더의 사용자 정보 표시 (관리자 전용)
+        const authContainer = document.getElementById('authContainer');
+        const authHTML = `\n          <div class="flex items-center space-x-3">\n            <span class="font-semibold">${data.username}님</span>\n            <button onclick=\"logout()\" class=\"bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-semibold transition\">로그아웃</button>\n          </div>\n        `;
+        if (authContainer) authContainer.innerHTML = authHTML;
+        const mobileAuth = document.getElementById('mobileAuthContainer');
+        if (mobileAuth) mobileAuth.innerHTML = authHTML;
+      } catch (error) {
+        console.error('인증 확인 오류:', error);
+        window.location.href = '/';
+      }
+    }
+
+    // 현재 설정 로드
+    async function loadSettings() {
+      try {
+        // 활성 API 정보
+        const apiRes = await fetch('/active_api');
+        const apiData = await apiRes.json();
+        document.getElementById('active_api').textContent = `${apiData.active} (${apiData.detect_endpoint})`;
+
+        // 필터링 레벨 정보
+        const levelRes = await fetch('/filtering_level');
+        const levelData = await levelRes.json();
+        document.getElementById('current_level').textContent = levelData.level.toUpperCase();
+
+        // 라디오 버튼 선택 상태 설정
+        document.getElementById(`level_${levelData.level}`).checked = true;
+      } catch (error) {
+        console.error('설정 로드 오류:', error);
+        alert('설정을 불러올 수 없습니다.');
+      }
+    }
+
+    // 필터링 레벨 저장
+    async function saveFilteringLevel() {
+      const selected = document.querySelector('input[name="filtering_level"]:checked');
+      if (!selected) {
+        alert('레벨을 선택해주세요.');
+        return;
+      }
+
+      try {
+        const res = await fetch('/filtering_level', {
+          method: 'POST',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({level: selected.value})
+        });
+
+        if (res.ok) {
+          alert('✅ 필터링 레벨이 저장되었습니다.');
+          loadSettings();
+        } else {
+          const error = await res.json();
+          alert(`❌ 저장 실패: ${error.detail}`);
+        }
+      } catch (error) {
+        alert(`❌ 오류: ${error.message}`);
+      }
+    }
+
+    // 페이지 로드 시
+    document.addEventListener('DOMContentLoaded', () => {
+      checkAdminAuth();
+      loadSettings();
+
+      // 30초마다 설정 업데이트
+      setInterval(loadSettings, 30000);
+    });
+  </script>
+</body>
+</html>

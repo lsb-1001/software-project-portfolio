@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>회원가입 - MyBoard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- 상단 네비게이션 -->
+    <header class="header-gradient shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <a href="/" class="flex items-center space-x-2">
+                <img src="/static/pslw.png" alt="MyBoard" class="h-12" />
+                <span class="text-white font-bold text-xl hidden sm:inline">MyBoard</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- 회원가입 폼 -->
+    <div class="min-h-screen flex items-center justify-center py-12 px-4">
+        <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">👤 회원가입</h1>
+                <p class="text-gray-600 mt-2">MyBoard에 가입하세요</p>
+            </div>
+
+            <form id="registerForm" class="space-y-4">
+                <!-- 사용자명 -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">사용자명</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username"
+                        required
+                        class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        placeholder="3자 이상의 사용자명"
+                    >
+                    <p class="text-red-500 text-sm mt-1" id="usernameError"></p>
+                </div>
+
+                <!-- 이메일 -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">이메일</label>
+                    <input 
+                        type="email" 
+                        id="email" 
+                        name="email"
+                        required
+                        class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        placeholder="example@email.com"
+                    >
+                    <p class="text-red-500 text-sm mt-1" id="emailError"></p>
+                </div>
+
+                <!-- 비밀번호 -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">비밀번호</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password"
+                        required
+                        class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        placeholder="6자 이상의 비밀번호"
+                    >
+                    <p class="text-red-500 text-sm mt-1" id="passwordError"></p>
+                </div>
+
+                <!-- 비밀번호 확인 -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">비밀번호 확인</label>
+                    <input 
+                        type="password" 
+                        id="confirmPassword" 
+                        name="confirmPassword"
+                        required
+                        class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        placeholder="비밀번호를 다시 입력하세요"
+                    >
+                    <p class="text-red-500 text-sm mt-1" id="confirmPasswordError"></p>
+                </div>
+
+                <!-- 가입 버튼 -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition-shadow duration-300"
+                >
+                    가입하기
+                </button>
+            </form>
+
+            <!-- 로그인 링크 -->
+            <div class="text-center mt-8 pt-6 border-t">
+                <p class="text-gray-600">이미 계정이 있으신가요?</p>
+                <a href="/login.html" class="inline-block mt-3 text-purple-600 font-bold hover:underline text-lg">로그인하기 →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-800 text-gray-300 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2025 MyBoard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        document.getElementById('registerForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 에러 메시지 초기화
+            document.getElementById('usernameError').textContent = '';
+            document.getElementById('emailError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+            document.getElementById('confirmPasswordError').textContent = '';
+            
+            const username = document.getElementById('username').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            // 클라이언트 검증
+            let hasError = false;
+            
+            if (username.length < 3) {
+                document.getElementById('usernameError').textContent = '사용자명은 3자 이상이어야 합니다.';
+                hasError = true;
+            }
+            
+            if (!email.includes('@')) {
+                document.getElementById('emailError').textContent = '유효한 이메일을 입력하세요.';
+                hasError = true;
+            }
+            
+            if (password.length < 6) {
+                document.getElementById('passwordError').textContent = '비밀번호는 6자 이상이어야 합니다.';
+                hasError = true;
+            }
+            
+            if (password !== confirmPassword) {
+                document.getElementById('confirmPasswordError').textContent = '비밀번호가 일치하지 않습니다.';
+                hasError = true;
+            }
+            
+            if (hasError) return;
+            
+            try {
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        username: username,
+                        email: email,
+                        password: password
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    alert('회원가입이 완료되었습니다! 로그인해주세요.');
+                    window.location.href = '/login.html';
+                } else {
+                    if (data.detail) {
+                        if (data.detail.includes('username')) {
+                            document.getElementById('usernameError').textContent = data.detail;
+                        } else if (data.detail.includes('email')) {
+                            document.getElementById('emailError').textContent = data.detail;
+                        } else {
+                            alert(data.detail);
+                        }
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('회원가입 중 오류가 발생했습니다.');
+            }
+        });
+    </script>
+</body>
+</html>

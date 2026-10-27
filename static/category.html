@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시판 - MyBoard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .post-card {
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .post-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- 상단 네비게이션 (반응형) -->
+  <header class="header-gradient shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center space-x-2">
+          <img src="/static/pslw.png" alt="MyBoard" class="h-12" />
+          <span class="text-white font-bold text-xl hidden sm:inline">MyBoard</span>
+        </a>
+
+        <div class="flex items-center">
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="/write.html" class="text-white hover:text-gray-200 font-semibold transition">글쓰기</a>
+            <a href="/category.html?category=공지" class="text-white hover:text-gray-200 font-semibold transition">공지</a>
+            <a href="/category.html?category=자유" class="text-white hover:text-gray-200 font-semibold transition">자유</a>
+            <a href="/category.html?category=질문" class="text-white hover:text-gray-200 font-semibold transition">질문</a>
+          </nav>
+
+          <div id="authContainer" class="hidden md:block text-white ml-6"></div>
+
+          <button id="mobileMenuButton" class="md:hidden ml-3 text-white" onclick="toggleMobileMenu()" aria-label="메뉴 토글">
+            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="mobileMenu" class="md:hidden hidden mt-3 px-2 pb-3">
+        <a href="/write.html" class="block text-white px-3 py-2 rounded hover:bg-gray-700">글쓰기</a>
+        <a href="/category.html?category=공지" class="block text-white px-3 py-2 rounded hover:bg-gray-700">공지</a>
+        <a href="/category.html?category=자유" class="block text-white px-3 py-2 rounded hover:bg-gray-700">자유</a>
+        <a href="/category.html?category=질문" class="block text-white px-3 py-2 rounded hover:bg-gray-700">질문</a>
+        <div id="mobileAuthContainer" class="px-3 mt-2"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 메인 콘텐츠 -->
+  <main class="max-w-5xl mx-auto py-12 px-4">
+    <!-- 카테고리 헤더 -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <h1 id="board-title" class="text-4xl font-bold text-gray-800"></h1>
+      <p class="text-gray-600 text-lg mt-2">카테고리별 게시판</p>
+    </div>
+
+    <!-- 게시글 목록 -->
+    <div id="post-list" class="space-y-4"></div>
+
+    <!-- 아무것도 없을 때 -->
+    <div id="empty-message" class="bg-white rounded-lg shadow-lg p-12 text-center hidden">
+      <p class="text-gray-500 text-xl">아직 게시물이 없습니다.</p>
+      <p class="text-gray-400 mt-2">첫 번째 게시물을 작성해보세요!</p>
+      <a href="write.html" class="inline-block mt-4 bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-2 px-6 rounded-lg hover:shadow-lg transition">
+        ✍️ 글쓰기
+      </a>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-gray-800 text-gray-300 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; 2025 MyBoard. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const category = params.get("category") || "전체";
+
+    document.getElementById("board-title").textContent = `${category} 게시판`;
+
+    async function loadCategoryPosts() {
+      try {
+        const res = await fetch(`/posts?category=${encodeURIComponent(category)}`);
+        const data = await res.json();
+        const container = document.getElementById("post-list");
+        const emptyMessage = document.getElementById("empty-message");
+        container.innerHTML = "";
+
+        if (!data.posts || data.posts.length === 0) {
+          emptyMessage.classList.remove('hidden');
+          return;
+        }
+
+        emptyMessage.classList.add('hidden');
+
+        for (const post of data.posts) {
+          const div = document.createElement("div");
+          div.className = "post-card bg-white rounded-lg shadow-lg hover:shadow-xl p-6 border-l-4 " + 
+            (post[2] ? "border-blue-500" : "border-gray-300");
+
+          const titleDiv = document.createElement("div");
+          titleDiv.className = "mb-3";
+
+          const link = document.createElement("a");
+          link.href = `post.html?id=${post[0]}`;
+          link.className = "text-xl font-bold text-gray-800 hover:text-purple-600 transition";
+          link.textContent = post[1];
+
+          if (post[2]) {
+            const badge = document.createElement("span");
+            badge.className = "inline-block bg-blue-100 text-blue-800 text-xs font-semibold px-2 py-1 rounded ml-2";
+            badge.textContent = "📢 공지";
+            titleDiv.appendChild(badge);
+            titleDiv.appendChild(document.createElement("br"));
+          }
+
+          titleDiv.appendChild(link);
+
+          const meta = document.createElement("div");
+          meta.className = "text-sm text-gray-600 flex items-center space-x-3 flex-wrap";
+          
+          // 욕설 단계 배지 색상 (critical은 high와 병합)
+          const levelColors = {
+            'critical': 'bg-orange-100 text-orange-800',
+            'high': 'bg-orange-100 text-orange-800',
+            'mid': 'bg-yellow-100 text-yellow-800',
+            'low': 'bg-blue-100 text-blue-800',
+            'none': 'bg-green-100 text-green-800'
+          };
+          const level = post[8] || 'none';
+          const levelColor = levelColors[level] || 'bg-gray-100 text-gray-800';
+          
+          let metaContent = `
+            <span>📅 ${post[3]}</span>
+            <span>👤 ${post[5] || '익명'}</span>
+            <span>👁️ 조회 ${post[6] ?? 0}</span>
+            <span>💬 댓글 ${post[4]}</span>
+          `;
+          // 관리자에게만 욕설 메타 표시
+          if (window.IS_ADMIN) {
+            const displayLevel = level === 'critical' ? 'high' : level;
+            metaContent += `<span class="font-semibold px-2 py-1 rounded text-xs ${levelColor}">욕설: ${(post[7] || 0).toFixed(3)} (${displayLevel})</span>`;
+          }
+          meta.innerHTML = metaContent;
+
+          div.appendChild(titleDiv);
+          div.appendChild(meta);
+          container.appendChild(div);
+        }
+      } catch (err) {
+        console.error('게시물 로드 오류:', err);
+      }
+    }
+
+    // 사용자 인증 상태 확인
+    async function checkUserAuth() {
+      try {
+        const res = await fetch('/user/check');
+        const data = await res.json();
+        const authContainer = document.getElementById('authContainer');
+        window.CURRENT_USER = data.logged_in ? data.username : null;
+        window.IS_ADMIN = data.logged_in ? data.is_admin : false;
+        
+        if (data.logged_in) {
+          let adminLink = '';
+          if (data.is_admin) {
+            adminLink = `<a href="/admin.html" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm font-semibold text-white transition">관리</a>`;
+          }
+          const authHTML = `
+            <div class="flex items-center space-x-3">
+              <span class="font-semibold">${data.username}님</span>
+              ${adminLink}
+              <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-semibold transition">로그아웃</button>
+            </div>
+          `;
+          authContainer.innerHTML = authHTML;
+          const mobileAuth = document.getElementById('mobileAuthContainer');
+          if (mobileAuth) mobileAuth.innerHTML = authHTML;
+        } else {
+          const authHTML = `
+            <div class="flex items-center space-x-3">
+              <a href="/login.html" class="bg-white text-purple-600 hover:bg-gray-100 px-3 py-1 rounded text-sm font-semibold transition">로그인</a>
+              <a href="/register.html" class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm font-semibold text-white transition">회원가입</a>
+            </div>
+          `;
+          authContainer.innerHTML = authHTML;
+          const mobileAuth = document.getElementById('mobileAuthContainer');
+          if (mobileAuth) mobileAuth.innerHTML = authHTML;
+        }
+      } catch (error) {
+        console.error('인증 상태 확인 오류:', error);
+      }
+    }
+
+    async function logout() {
+      if (confirm('정말 로그아웃하시겠습니까?')) {
+        try {
+          const res = await fetch('/logout', { method: 'POST' });
+          if (res.ok) {
+            alert('✅ 로그아웃되었습니다.');
+            window.location.reload();
+          }
+        } catch (error) {
+          alert('❌ 로그아웃 중 오류가 발생했습니다.');
+        }
+      }
+    }
+
+    function toggleMobileMenu() {
+      const el = document.getElementById('mobileMenu');
+      if (!el) return;
+      el.classList.toggle('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkUserAuth();
+      loadCategoryPosts();
+    });
+  </script>
+</body>
+</html>

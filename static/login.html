@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인 - MyBoard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        body {
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+        }
+        .header-gradient {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+    </style>
+</head>
+<body class="font-sans">
+    <!-- 상단 네비게이션 -->
+    <header class="header-gradient shadow-lg">
+        <div class="max-w-7xl mx-auto px-4 py-4">
+            <a href="/" class="flex items-center space-x-2">
+                <img src="/static/pslw.png" alt="MyBoard" class="h-12" />
+                <span class="text-white font-bold text-xl hidden sm:inline">MyBoard</span>
+            </a>
+        </div>
+    </header>
+
+    <!-- 로그인 폼 -->
+    <div class="min-h-screen flex items-center justify-center py-12 px-4">
+        <div class="w-full max-w-md bg-white rounded-lg shadow-lg p-8">
+            <div class="text-center mb-8">
+                <h1 class="text-3xl font-bold text-gray-800">🔐 로그인</h1>
+                <p class="text-gray-600 mt-2">MyBoard에 로그인하세요</p>
+            </div>
+
+            <form id="loginForm" class="space-y-4">
+                <!-- 사용자명 -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">사용자명</label>
+                    <input 
+                        type="text" 
+                        id="username" 
+                        name="username"
+                        required
+                        class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        placeholder="사용자명 입력"
+                    >
+                    <p class="text-red-500 text-sm mt-1" id="usernameError"></p>
+                </div>
+
+                <!-- 비밀번호 -->
+                <div>
+                    <label class="block text-gray-700 font-semibold mb-2">비밀번호</label>
+                    <input 
+                        type="password" 
+                        id="password" 
+                        name="password"
+                        required
+                        class="w-full px-4 py-2 border-2 border-gray-300 rounded-lg focus:border-purple-500 focus:outline-none transition"
+                        placeholder="비밀번호 입력"
+                    >
+                    <p class="text-red-500 text-sm mt-1" id="passwordError"></p>
+                </div>
+
+                <!-- 로그인 버튼 -->
+                <button 
+                    type="submit" 
+                    class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-3 rounded-lg hover:shadow-lg transition-shadow duration-300"
+                >
+                    로그인
+                </button>
+            </form>
+
+            <!-- 회원가입 링크 -->
+            <div class="text-center mt-8 pt-6 border-t">
+                <p class="text-gray-600">계정이 없으신가요?</p>
+                <a href="/register.html" class="inline-block mt-3 text-purple-600 font-bold hover:underline text-lg">회원가입하기 →</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- 푸터 -->
+    <footer class="bg-gray-800 text-gray-300 py-8 mt-16">
+        <div class="max-w-7xl mx-auto px-4 text-center">
+            <p>&copy; 2025 MyBoard. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script>
+        const form = document.getElementById('loginForm');
+        
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // 에러 메시지 초기화
+            document.getElementById('usernameError').textContent = '';
+            document.getElementById('passwordError').textContent = '';
+
+            const username = document.getElementById('username').value.trim();
+            const password = document.getElementById('password').value;
+
+            if (!username || !password) {
+                alert('❌ 사용자명과 비밀번호를 입력하세요.');
+                return;
+            }
+
+            try {
+                const response = await fetch('/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const data = await response.json();
+
+                if (!response.ok) {
+                    alert('❌ ' + data.detail);
+                    return;
+                }
+
+                alert('✅ ' + data.message);
+                window.location.href = '/';
+            } catch (error) {
+                alert('❌ 오류: ' + error.message);
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,379 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>게시글 보기 - MyBoard</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    body {
+      background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+      min-height: 100vh;
+    }
+    .header-gradient {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+    .comment-item {
+      transition: background-color 0.2s;
+    }
+    .comment-item:hover {
+      background-color: #f9fafb;
+    }
+  </style>
+</head>
+<body class="font-sans">
+  <!-- 상단 네비게이션 (반응형) -->
+  <header class="header-gradient shadow-lg sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-4">
+      <div class="flex items-center justify-between">
+        <a href="/" class="flex items-center space-x-2">
+          <img src="/static/pslw.png" alt="MyBoard" class="h-12" />
+          <span class="text-white font-bold text-xl hidden sm:inline">MyBoard</span>
+        </a>
+
+        <div class="flex items-center">
+          <nav class="hidden md:flex items-center space-x-6">
+            <a href="/write.html" class="text-white hover:text-gray-200 font-semibold transition">글쓰기</a>
+            <a href="/category.html?category=공지" class="text-white hover:text-gray-200 font-semibold transition">공지</a>
+            <a href="/category.html?category=자유" class="text-white hover:text-gray-200 font-semibold transition">자유</a>
+            <a href="/category.html?category=질문" class="text-white hover:text-gray-200 font-semibold transition">질문</a>
+          </nav>
+
+          <div id="authContainer" class="hidden md:block text-white ml-6"></div>
+
+          <button id="mobileMenuButton" class="md:hidden ml-3 text-white" onclick="toggleMobileMenu()" aria-label="메뉴 토글">
+            <svg class="h-7 w-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div id="mobileMenu" class="md:hidden hidden mt-3 px-2 pb-3">
+        <a href="/write.html" class="block text-white px-3 py-2 rounded hover:bg-gray-700">글쓰기</a>
+        <a href="/category.html?category=공지" class="block text-white px-3 py-2 rounded hover:bg-gray-700">공지</a>
+        <a href="/category.html?category=자유" class="block text-white px-3 py-2 rounded hover:bg-gray-700">자유</a>
+        <a href="/category.html?category=질문" class="block text-white px-3 py-2 rounded hover:bg-gray-700">질문</a>
+        <div id="mobileAuthContainer" class="px-3 mt-2"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- 게시글 본문 -->
+  <main class="max-w-3xl mx-auto py-12 px-4">
+    <!-- 게시글 -->
+    <div class="bg-white rounded-lg shadow-lg p-8 mb-8">
+      <div class="border-b pb-6 mb-6">
+        <h1 id="post-title" class="text-4xl font-bold text-gray-800 mb-4"></h1>
+        <div id="post-meta" class="text-gray-600 text-sm flex space-x-4"></div>
+      </div>
+      <div id="post-content" class="text-gray-800 text-lg leading-relaxed whitespace-pre-wrap mb-6"></div>
+      <div class="flex space-x-2">
+        <button onclick="deletePost()" class="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded transition">
+          🗑️ 삭제
+        </button>
+        <button onclick="history.back()" class="bg-gray-400 hover:bg-gray-500 text-white font-semibold py-2 px-4 rounded transition">
+          ← 돌아가기
+        </button>
+      </div>
+    </div>
+
+    <!-- 댓글 섹션 -->
+    <div class="bg-white rounded-lg shadow-lg p-8">
+      <h2 class="text-2xl font-bold text-gray-800 mb-6">💬 댓글</h2>
+
+      <!-- 댓글 목록 -->
+      <div id="comments-list" class="space-y-4 mb-8 max-h-96 overflow-y-auto"></div>
+
+      <!-- 댓글 작성 -->
+      <div class="border-t pt-6">
+        <h3 class="text-lg font-semibold text-gray-800 mb-4">댓글 작성</h3>
+        <form id="commentForm" class="space-y-4">
+          <textarea 
+            id="comment-content" 
+            rows="4" 
+            placeholder="댓글을 입력하세요. (욕설은 자동으로 필터링됩니다)"
+            class="w-full border-2 border-gray-300 px-4 py-2 rounded-lg focus:border-purple-500 focus:outline-none transition resize-none"
+          ></textarea>
+          <!-- 댓글 욕설 분석 결과 -->
+          <div id="commentAnalysisResult" class="hidden p-3 rounded-lg bg-gray-50 border-2 border-gray-200">
+            <p class="text-sm text-gray-600">분석: 
+              <span id="commentAnalysisSweariess" class="font-semibold"></span> | 
+              <span id="commentAnalysisScore" class="font-semibold"></span> | 
+              <span id="commentAnalysisLevel" class="font-semibold px-2 py-1 rounded text-white"></span>
+            </p>
+          </div>
+          <button 
+            type="submit" 
+            class="w-full bg-gradient-to-r from-purple-500 to-indigo-600 text-white font-bold py-2 rounded-lg hover:shadow-lg transition-shadow duration-300"
+          >
+            댓글 등록
+          </button>
+        </form>
+      </div>
+    </div>
+  </main>
+
+  <!-- 푸터 -->
+  <footer class="bg-gray-800 text-gray-300 py-8 mt-16">
+    <div class="max-w-7xl mx-auto px-4 text-center">
+      <p>&copy; 2025 MyBoard. All rights reserved.</p>
+    </div>
+  </footer>
+
+  <script>
+    const params = new URLSearchParams(window.location.search);
+    const id = params.get("id");
+
+    async function loadPost() {
+      try {
+        const res = await fetch(`/post/${id}`);
+        if (!res.ok) throw new Error("글을 불러올 수 없습니다");
+        const data = await res.json();
+        document.getElementById("post-title").textContent = data.title;
+        document.getElementById("post-content").textContent = data.content;
+        document.getElementById("post-meta").innerHTML = `
+          <span>📅 ${data.created_at}</span>
+          <span>👤 ${data.author || '익명'}</span>
+          <span>👁️ 조회 ${data.views ?? 0}</span>
+          <span>📂 ${data.category}</span>
+          <span>${data.is_notice ? '📢 공지사항' : ''}</span>
+        `;
+
+        // 삭제 버튼은 작성자 또는 관리자만 보이도록
+        const deleteBtn = document.querySelector('button[onclick="deletePost()"]');
+        if (window.CURRENT_USER && (window.CURRENT_USER === data.author || window.IS_ADMIN)) {
+          deleteBtn.style.display = 'inline-block';
+        } else {
+          deleteBtn.style.display = 'none';
+        }
+      } catch (err) {
+        document.getElementById("post-title").textContent = "❌ 오류";
+        document.getElementById("post-content").textContent = err.message;
+      }
+    }
+
+    async function loadComments() {
+      try {
+        const res = await fetch(`/comments/${id}`);
+        const data = await res.json();
+        const list = document.getElementById("comments-list");
+        list.innerHTML = "";
+        
+        if (data.comments.length === 0) {
+          list.innerHTML = '<p class="text-gray-500 text-center py-8">아직 댓글이 없습니다.</p>';
+          return;
+        }
+
+        for (const comment of data.comments) {
+          // comment: [id, content, author, created_at, swear_score, swear_level]
+          const item = document.createElement("div");
+          item.className = "comment-item bg-gray-50 p-4 rounded-lg border-l-4 border-purple-500";
+
+          const headerDiv = document.createElement("div");
+          headerDiv.className = "text-xs text-gray-500 mb-2 flex justify-between items-center flex-wrap";
+          
+          // 욕설 단계 배지 색상 (critical은 high와 병합)
+          const levelColors = {
+            'critical': 'bg-orange-100 text-orange-800',
+            'high': 'bg-orange-100 text-orange-800',
+            'mid': 'bg-yellow-100 text-yellow-800',
+            'low': 'bg-blue-100 text-blue-800',
+            'none': 'bg-green-100 text-green-800'
+          };
+          const level = comment[5] || 'none';
+          const levelColor = levelColors[level] || 'bg-gray-100 text-gray-800';
+          let headerContent = `
+            <div class="flex space-x-2 items-center">
+              <span>작성자: ${comment[2] || '익명'}</span>
+              <span>${comment[3] || ''}</span>
+            </div>
+          `;
+          // 관리자에게만 욕설 메타 표시
+          if (window.IS_ADMIN) {
+            const displayLevel = level === 'critical' ? 'high' : level;
+            headerContent += `<span class="font-semibold px-2 py-1 rounded text-xs ${levelColor}">욕설: ${(comment[4] || 0).toFixed(3)} (${displayLevel})</span>`;
+          }
+          headerDiv.innerHTML = headerContent;
+
+          const contentDiv = document.createElement("div");
+          contentDiv.className = "text-gray-800 mb-2";
+          contentDiv.textContent = comment[1];
+
+          const actionDiv = document.createElement("div");
+          actionDiv.className = "flex justify-end";
+
+          // 삭제 버튼은 작성자 또는 관리자만 보여줌
+          if (window.CURRENT_USER && (window.CURRENT_USER === comment[2] || window.IS_ADMIN)) {
+            const delBtn = document.createElement("button");
+            delBtn.textContent = "🗑️ 삭제";
+            delBtn.className = "text-red-500 hover:text-red-700 text-sm font-semibold";
+            delBtn.onclick = async (e) => {
+              e.preventDefault();
+              if (!confirm("이 댓글을 삭제하시겠습니까?")) return;
+              try {
+                const res = await fetch(`/comment/${comment[0]}`, { method: "DELETE" });
+                if (res.ok) {
+                  loadComments();
+                } else {
+                  const err = await res.json();
+                  alert('삭제 실패: ' + (err.detail || '권한이 없거나 오류 발생'));
+                }
+              } catch (err) {
+                alert('오류: ' + err.message);
+              }
+            };
+            actionDiv.appendChild(delBtn);
+          }
+
+          item.appendChild(headerDiv);
+          item.appendChild(contentDiv);
+          item.appendChild(actionDiv);
+          list.appendChild(item);
+        }
+      } catch (err) {
+        console.error('댓글 로드 오류:', err);
+      }
+    }
+
+    async function submitComment(e) {
+      e.preventDefault();
+      const content = document.getElementById("comment-content").value.trim();
+      if (!content) {
+        alert("댓글을 입력해주세요.");
+        return;
+      }
+
+      try {
+        const res = await fetch("/comment", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ post_id: parseInt(id), content })
+        });
+
+        if (res.ok) {
+          alert("✅ 댓글이 등록되었습니다!");
+          document.getElementById("comment-content").value = "";
+          loadComments();
+        } else {
+          const error = await res.json();
+          alert("❌ 등록 실패: " + (error.detail || "오류"));
+        }
+      } catch (err) {
+        alert("❌ 오류: " + err.message);
+      }
+    }
+
+    async function deletePost() {
+      if (!confirm("정말 이 게시글을 삭제하시겠습니까?")) return;
+
+      try {
+        const res = await fetch(`/post/${id}`, { method: "DELETE" });
+        if (res.ok) {
+          alert("✅ 게시글이 삭제되었습니다.");
+          window.location.href = "/";
+        } else {
+          const error = await res.json();
+          alert("❌ 삭제 실패: " + (error.detail || "알 수 없는 오류"));
+        }
+      } catch (err) {
+        alert("❌ 오류: " + err.message);
+      }
+    }
+
+    // 사용자 인증 상태 확인
+    async function checkUserAuth() {
+      try {
+        const res = await fetch('/user/check');
+        const data = await res.json();
+        const authContainer = document.getElementById('authContainer');
+        window.CURRENT_USER = data.logged_in ? data.username : null;
+        window.IS_ADMIN = data.logged_in ? data.is_admin : false;
+        
+        if (data.logged_in) {
+          let adminLink = '';
+          if (data.is_admin) {
+            adminLink = `<a href="/admin.html" class="bg-yellow-500 hover:bg-yellow-600 px-3 py-1 rounded text-sm font-semibold text-white transition">관리</a>`;
+          }
+          const authHTML = `
+            <div class="flex items-center space-x-3">
+              <span class="font-semibold">${data.username}님</span>
+              ${adminLink}
+              <button onclick="logout()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded text-sm font-semibold transition">로그아웃</button>
+            </div>
+          `;
+          authContainer.innerHTML = authHTML;
+          const mobileAuth = document.getElementById('mobileAuthContainer');
+          if (mobileAuth) mobileAuth.innerHTML = authHTML;
+        } else {
+          const authHTML = `
+            <div class="flex items-center space-x-3">
+              <a href="/login.html" class="bg-white text-purple-600 hover:bg-gray-100 px-3 py-1 rounded text-sm font-semibold transition">로그인</a>
+              <a href="/register.html" class="bg-green-500 hover:bg-green-600 px-3 py-1 rounded text-sm font-semibold text-white transition">회원가입</a>
+            </div>
+          `;
+          authContainer.innerHTML = authHTML;
+          const mobileAuth = document.getElementById('mobileAuthContainer');
+          if (mobileAuth) mobileAuth.innerHTML = authHTML;
+        }
+      } catch (error) {
+        console.error('인증 상태 확인 오류:', error);
+      }
+    }
+
+    async function logout() {
+      if (confirm('정말 로그아웃하시겠습니까?')) {
+        try {
+          const res = await fetch('/logout', { method: 'POST' });
+          if (res.ok) {
+            alert('✅ 로그아웃되었습니다.');
+            window.location.reload();
+          }
+        } catch (error) {
+          alert('❌ 로그아웃 중 오류가 발생했습니다.');
+        }
+      }
+    }
+
+    function toggleMobileMenu() {
+      const el = document.getElementById('mobileMenu');
+      if (!el) return;
+      el.classList.toggle('hidden');
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      checkUserAuth().then(() => {
+        loadPost();
+        loadComments();
+      });
+      document.getElementById('commentForm').addEventListener('submit', submitComment);
+      // 댓글 내용 변경 시 욕설 분석
+      document.getElementById('comment-content').addEventListener('blur', async () => {
+        const content = document.getElementById('comment-content').value;
+        if (!content) {
+          document.getElementById('commentAnalysisResult').classList.add('hidden');
+          return;
+        }
+        try {
+          const res = await fetch('/analyze', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify({text: content})
+          });
+          const result = await res.json();
+          document.getElementById('commentAnalysisSweariess').textContent = result.is_swear ? '있음' : '없음';
+          document.getElementById('commentAnalysisScore').textContent = `점수: ${result.swear_score.toFixed(3)}`;
+          const levelEl = document.getElementById('commentAnalysisLevel');
+          levelEl.textContent = result.level.toUpperCase();
+          levelEl.className = 'font-semibold px-2 py-1 rounded text-white ' + (
+            (result.level === 'high' || result.level === 'critical') ? 'bg-orange-600' :
+            result.level === 'mid' ? 'bg-yellow-600' :
+            'bg-green-600'
+          );
+          document.getElementById('commentAnalysisResult').classList.remove('hidden');
+        } catch (e) {
+          console.error('분석 실패:', e);
+        }
+      });
+    });
+  </script>
+</body>
+</html>
