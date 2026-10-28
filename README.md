@@ -1,21 +1,86 @@
-![포트폴리오 커버](portfolio-cover.png)
+![이수빈 포트폴리오](portfolio-cover.png)
 
-# 이수빈 · 소프트웨어 프로젝트 포트폴리오
+## 안녕하세요, 이수빈입니다.
 
-대학 및 직업훈련 과정에서 진행한 프로젝트입니다. 개발에는 AI 도구를 활용했습니다.
+정보통신공학을 전공하며 웹서비스에 AI 기능을 연결하는 프로젝트를 진행했습니다. 현재는 로봇 개발 교육을 받으며 소프트웨어와 센서를 함께 다루고 있습니다.
 
-![프로젝트 요약](project-overview.png)
+[노션 포트폴리오](https://app.notion.com/p/40656a83e78580f48be3cfbcc3b420d7) · [이메일](mailto:1001subin@gmail.com)
 
-## 프로젝트 바로가기
+---
 
-| 프로젝트 | 코드 구분 | 확인 범위 |
-|---|---|---|
-| 욕설 필터링 | 제출 소스 정리본 · 저장소 루트 | API 정상/욕설 예시, 빈 DB 실행 |
-| [음성 요약](voice-reconstruction) | 보고서 기반 재구현 소스 | 5개 자동 테스트, Whisper 영어 샘플 1건 전사 확인 · Gemini 실호출 미검증 |
-| [여행 추천](travel-reconstruction) | 보고서·가이드 기반 재구현 소스 | 빌드 및 10개 HTTP 확인 항목 통과 |
-| [이동형 로봇](https://github.com/oioihoihoih/mobile-humidity-control-robot) | 팀 저장소 참고 | 본인 참여 범위는 S/W·일부 모듈 제작, 이동 확인 |
+## 프로젝트
 
-소스는 위 폴더에서 바로 확인할 수 있습니다. ZIP에도 같은 소스와 실행 안내를 포함했습니다. 빌드 산출물, 사용자 DB, API 키는 포함하지 않았습니다. 재구현은 당시 원본 코드나 당시 성과와 구분합니다.
+<table>
+<tr>
+<td width="50%" valign="top">
+<a href="https://app.notion.com/p/01-40656a83e785806da1f2f7da22a2cc71"><img src="01-cover.png" alt="욕설 필터링 게시판" width="100%"></a>
+<h3>01 · 욕설 필터링 게시판</h3>
+<p>2025 · 4인 팀 / 팀장</p>
+<p>게시글의 욕설을 탐지하고 필터링하는 서비스입니다. 데이터 전처리, 모델 학습과 백엔드를 맡았습니다.</p>
+<p><code>Python · FastAPI · scikit-learn</code></p>
+<a href="https://app.notion.com/p/01-40656a83e785806da1f2f7da22a2cc71">프로젝트 소개 ↗</a> · <a href="main.py">코드 보기</a>
+</td>
+<td width="50%" valign="top">
+<a href="https://app.notion.com/p/02-40656a83e78580d092e0d01270340e16"><img src="02-cover.png" alt="음성 요약 웹서비스" width="100%"></a>
+<h3>02 · 음성 요약 웹서비스</h3>
+<p>2026 · 4인 팀 / 팀원</p>
+<p>음성을 텍스트로 변환하고 요약 기록을 관리합니다. 백엔드와 AI 연동, 데이터 처리에 참여했습니다.</p>
+<p><code>FastAPI · Whisper · Gemini</code></p>
+<a href="https://app.notion.com/p/02-40656a83e78580d092e0d01270340e16">프로젝트 소개 ↗</a> · <a href="voice-reconstruction">코드 보기</a>
+</td>
+</tr>
+<tr>
+<td width="50%" valign="top">
+<a href="https://app.notion.com/p/03-AI-40656a83e78580f2bb34f9f4650469ca"><img src="03-cover.png" alt="여행상품 추천 웹사이트" width="100%"></a>
+<h3>03 · 여행상품 추천 웹사이트</h3>
+<p>2026 · 개인 프로젝트</p>
+<p>여행 조건에 맞는 상품 추천부터 예약·취소까지 연결했습니다. AI 도구와 함께 웹서비스 전반을 구현했습니다.</p>
+<p><code>Java · Spring Boot · MySQL</code></p>
+<a href="https://app.notion.com/p/03-AI-40656a83e78580f2bb34f9f4650469ca">프로젝트 소개 ↗</a> · <a href="travel-reconstruction">코드 보기</a>
+</td>
+<td width="50%" valign="top">
+<a href="https://app.notion.com/p/04-40656a83e7858060a4a9c97e45fd9558"><img src="04-cover.png" alt="이동형 제습·가습 로봇" width="100%"></a>
+<h3>04 · 이동형 제습·가습 로봇</h3>
+<p>직업훈련 · 팀 프로젝트</p>
+<p>소프트웨어 작성과 일부 하드웨어 모듈 제작·탑재에 참여했습니다. 실제 로봇의 이동을 확인했습니다.</p>
+<p><code>Arduino · ESP-01 · Python</code></p>
+<a href="https://app.notion.com/p/04-40656a83e7858060a4a9c97e45fd9558">프로젝트 소개 ↗</a> · <a href="https://github.com/oioihoihoih/mobile-humidity-control-robot">팀 저장소</a>
+</td>
+</tr>
+</table>
+
+개발에는 AI 도구를 활용했습니다. 음성 요약·여행 추천의 현재 코드는 보고서 기반 재구현입니다. 당시 작업과 이번 정리 과정의 변경점은 각 프로젝트 README에 구분해 적었습니다. 커버와 도식은 설명용 이미지입니다.
+
+## 사용한 기술
+
+| 분야 | 프로젝트에서 사용한 도구 |
+| :--- | :--- |
+| 웹서비스 | Python · FastAPI / Java · Spring Boot |
+| 데이터·AI | SQLite · MySQL / scikit-learn · Whisper · Gemini API |
+| 하드웨어 | Arduino · ESP-01을 활용한 일부 모듈 제작 |
+| 영상·디자인 | Premiere Pro · Photoshop — 유튜브 외주 및 개인 작업 |
+
+## 학력과 교육
+
+**배재대학교 정보통신공학과**  
+2020.03 입학 · 2027.02 졸업예정
+
+**미래융합교육원 · 로보테크 AI 자율주행 로봇 개발자 과정**  
+2026.07.21 ~ 2027.01.28 예정 · 수강 중
+
+---
+
+<details>
+<summary><b>실행 방법과 검증 범위</b></summary>
+
+| 프로젝트 | 확인한 내용 | 남은 검증·한계 |
+| :--- | :--- | :--- |
+| 욕설 필터링 | API 예시와 빈 DB 실행 | 별도 평가 데이터의 정확도 미측정 |
+| 음성 요약 | 자동 테스트 5개, Whisper 영어 샘플 1건 실제 전사 | Gemini 실호출·한국어 정확도·장시간 음성 성능 미검증 |
+| 여행 추천 | Maven 빌드, H2 환경 HTTP 확인 10개 | Gemini 실호출·MySQL·동시 예약 부하 미검증 |
+| 이동형 로봇 | 실제 이동 구동 확인 | 전체 자율주행·제습·가습 완주와 구분 |
+
+음성 요약과 여행 추천의 실행 방법은 각 소스 폴더의 README에 있습니다. 빈 키·예시 키에서는 Gemini를 호출하지 않고 대체 동작을 표시합니다. ZIP은 같은 소스의 다운로드용 묶음입니다.
 
 ## 욕설 필터링 게시판
 
@@ -58,12 +123,21 @@ http://127.0.0.1:8000 에 접속합니다. 빈 DB는 자동 생성됩니다. 기
 사전은 문맥을 구분하지 못해 일반 단어도 잘못 탐지할 수 있습니다. 분리된 평가 데이터로 성능을 검증한 기록이 없어 정확도 수치를 기재하지 않습니다. 포함한 모델은 제출된 프로젝트 파일입니다.
 
 
-## 음성 요약 · 여행 추천
 
-2026년 1학기 프로젝트 자료를 근거로 2026-10-28에 재구현했습니다. 음성 요약은 팀원으로 백엔드·AI 연동·데이터 처리에 참여했고, 여행 추천은 개인 프로젝트입니다. 원본 소스가 확보되지 않아 구조와 기능을 재작성했으며 변경점은 각 폴더의 README에 정리했습니다.
+</details>
 
-## 로봇 프로젝트
+<details>
+<summary><b>저장소 구성</b></summary>
 
-직업훈련 팀 프로젝트에서 S/W와 일부 하드웨어 모듈 제작·탑재에 참여했습니다. 실제 이동 구동 확인과 전체 자율주행·제습·가습 완주 검증은 구분합니다. 팀 소스의 전체 기능을 개인 성과로 기재하지 않습니다.
+- `main.py`, `detection_api.py`, `static/`, 모델 파일: 욕설 필터링 제출 소스 정리본
+- `voice-reconstruction/`: 음성 요약 재구현 코드·테스트·실행 안내
+- `travel-reconstruction/`: 여행 추천 재구현 코드·검증 스크립트·실행 안내
+- `*.png`: 포트폴리오 커버와 설명용 도식
+- `*-reconstruction.zip`: 재구현 소스 다운로드용 압축본
 
-구조도와 프로젝트 카드 이미지는 자료를 바탕으로 새로 구성한 설명 자료이며 실제 실행 화면이 아닙니다.
+사용자 DB와 실제 API 키는 포함하지 않았습니다. 로봇 팀 저장소의 전체 기능을 개인 성과로 기재하지 않습니다.
+
+</details>
+
+**연락** · [1001subin@gmail.com](mailto:1001subin@gmail.com)  
+대전 · 서울 · 경기 근무 희망 / 입사 시기 협의 가능
