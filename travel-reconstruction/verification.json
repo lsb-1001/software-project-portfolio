@@ -1,0 +1,10 @@
+{
+  "date": "2026-10-28",
+  "runtime": "Java 17 / Spring Boot 3.5.14 / H2",
+  "build": "passed",
+  "http_checks": 10,
+  "gemini_key": "placeholder only",
+  "gemini_live_call": false,
+  "mysql_verified": false,
+  "concurrency_load_verified": false
+}
